@@ -3,9 +3,9 @@
 End-to-end automated tests for the Web Disclosure (WD) site using
 Playwright and TypeScript.
 
-This project validates: - Country filter functionality (Belgium
-meetings) - Company search navigation to Vote Card page - Vote table
-header verification
+This project validates: 
+- AC1: Verify Table is Filtered Correctly by Country "Belgium" on Landing Page
+- AC2: Verify User Can Search and Navigate to Vote Card Page for Company "Activision Blizzard Inc"
 
 ------------------------------------------------------------------------
 
@@ -52,9 +52,10 @@ Playwright browsers must be installed after dependency setup.
 
 ## Environment Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env.example` file in the root directory:
 
-BASE_URL=https://viewpoint.glasslewis.com/WD/?siteId=DemoClient
+BASE_URL=https://viewpoint.glasslewis.com
+WD_PATH=/WD/?siteId=DemoClient
 
 Ensure `playwright.config.ts` references the environment variable:
 
@@ -91,8 +92,14 @@ Artifacts are stored in the `test-results` directory.
 
 ## Project Structure
 
-wd-automation/ ├── pages/ ├── tests/ ├── utils/ ├── playwright.config.ts
-├── .env ├── package.json └── README.md
+wd-automation/ 
+├── pages/ 
+├── tests/ 
+├── utils/ 
+├── playwright.config.ts
+├── .env 
+├── package.json 
+└── README.md
 
 ------------------------------------------------------------------------
 

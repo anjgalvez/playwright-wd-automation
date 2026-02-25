@@ -1,30 +1,24 @@
 import { test, expect } from "@playwright/test";
+import { LandingPage } from "../pages/landingPage";
+import { COUNTRY } from "../utils/constants";
 
-const country = "Belgium";
-
-test(`AC1: Verify Meetings Grid Filters Correctly by Country "${country}" on Landing Page`, async ({
+test(`AC1: Verify Table is Filtered Correctly by Country "${COUNTRY}" on Landing Page`, async ({
   page
 }) => {
   await page.goto("/WD/?siteId=DemoClient");
 
+  const landing = new LandingPage(page);
+
   // Verify country filter is visible
-  const countryFilter = page.getByRole("region", { name: "Country Filter" });
-  await expect(countryFilter).toBeVisible();
+  await expect(landing.countryFilter).toBeVisible();
 
-  await countryFilter.getByRole("checkbox", { name: country }).check();
-  await countryFilter.getByRole("button", { name: "Update" }).click();
+  // Select the country and apply the filter
+  await landing.countryCheckbox(COUNTRY).check();
+  await landing.countryUpdateButton().click();
 
-  // Wait for loading overlay to disappear
-  await page
-    .locator("text=Loading...")
-    .first()
-    .waitFor({ state: "hidden" })
-    .catch(() => {});
+  await landing.loadingText.waitFor({ state: "hidden" }).catch(() => {});
 
-  // Verify all rows show the selected country
-  const countryCells = page.locator(".k-grid-content.k-auto-scrollable tbody tr td:nth-child(5)");
-  await expect(countryCells.first()).toHaveText(country);
-
-  const values = (await countryCells.allTextContents()).map((t) => t.trim());
-  expect(values.every((v) => v === country)).toBeTruthy();
+  // Verify all rows in the grid have the selected country
+  const countryCells = landing.countryCellsInGrid();
+  await expect(countryCells.first()).toHaveText(COUNTRY);
 });

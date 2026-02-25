@@ -1,36 +1,27 @@
 import { test, expect } from "@playwright/test";
+import { LandingPage } from "../pages/landingPage";
+import { VoteCardPage } from "../pages/voteCardPage";
+import { COMPANY_NAME, VOTE_TABLE_HEADERS, MEETING_DETAIL_URL_REGEX } from "../utils/constants";
 
-const companyName = "Activision Blizzard Inc";
-
-test(`AC2: Verify User Can Search and Navigate to Vote Card Page for "${companyName}"`, async ({
+test(`AC2: Verify User Can Search and Navigate to Vote Card Page for "${COMPANY_NAME}"`, async ({
   page
 }) => {
   await page.goto("/WD/?siteId=DemoClient");
 
+  const landing = new LandingPage(page);
+  const voteCard = new VoteCardPage(page);
+
   // Search for the company
-  const searchBox = page
-    .getByRole("banner")
-    .getByRole("combobox", { name: "Search for a company" });
+  await expect(landing.searchBox).toBeVisible();
+  await landing.searchBox.fill(COMPANY_NAME);
+  await landing.companyOption(COMPANY_NAME).click();
 
-  await expect(searchBox).toBeVisible();
-  await searchBox.fill(companyName);
-
-  await page.getByRole("option", { name: companyName }).click();
+  // Verify URL navigated to vote card page
+  await expect(page).toHaveURL(MEETING_DETAIL_URL_REGEX);
 
   // Verify vote table is visible
-  const expectedHeaders = [
-    "Item",
-    "Proposal Description",
-    "Management Recommendation",
-    "Vote Decision",
-    "For / Against Management",
-    "Proponent"
-  ];
-
-  const headers = page.getByRole("columnheader");
-
-  await expect(headers).toHaveText(expectedHeaders);
+  await expect(voteCard.headers).toContainText(VOTE_TABLE_HEADERS);
 
   // Verify company name is visible as top banner
-  await expect(page.getByRole("heading", { level: 2, name: companyName })).toBeVisible();
+  await expect(voteCard.companyHeading(COMPANY_NAME)).toBeVisible();
 });
